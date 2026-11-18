@@ -1,8 +1,7 @@
 #include "audio_processor.h"
 #include <math.h>
 
-
-// Convert 32-bit I2S samples into 16-bit PCM samples.
+// Convert 32-bit I2S samples into 16-bit PCM.
 size_t convertToPCM16(
     const int32_t* input,
     size_t inputSamples,
@@ -21,10 +20,10 @@ size_t convertToPCM16(
 
     for (size_t i = 0; i < samplesToConvert; i++) {
 
-        // Extract audio bits and scale to signed 16-bit PCM.
-        int32_t sample = input[i] >> 14;
+        // Extract the upper 16 bits of the
+        // expected MSB-aligned INMP441 sample.
+        int32_t sample = input[i] >> 16;
 
-        // Prevent clipping.
         if (sample > 32767) {
             sample = 32767;
         }
@@ -62,7 +61,7 @@ float calculateAudioRMS(
 }
 
 
-// Detect voice using an energy threshold.
+// Basic energy-based voice detection.
 bool detectVoice(
     const int16_t* samples,
     size_t sampleCount,
