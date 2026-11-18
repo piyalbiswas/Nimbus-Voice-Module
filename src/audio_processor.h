@@ -11,4 +11,17 @@ size_t convertToPCM16(
     size_t outputCapacity
 );
 
+// Calculate RMS audio level from 16-bit PCM samples.
+float calculateAudioRMS(
+    const int16_t* samples,
+    size_t sampleCount
+);
+
+// Detect whether the audio contains speech.
+bool detectVoice(
+    const int16_t* samples,
+    size_t sampleCount,
+    float threshold
+);
+
 #endif
