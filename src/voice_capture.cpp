@@ -8,6 +8,7 @@ static int32_t rawBuffer[RAW_BUFFER_SAMPLES];
 static bool captureActive = false;
 
 bool voiceCaptureBegin() {
+    microphoneFlush();
     captureActive = true;
     return true;
 }

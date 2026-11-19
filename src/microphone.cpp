@@ -54,15 +54,22 @@ bool microphoneBegin() {
     return true;
 }
 
+void microphoneFlush() {
+    i2s_zero_dma_buffer(I2S_PORT);
+}
+
 bool microphoneReadAudio(
     int32_t* buffer,
     size_t bufferSize,
     size_t* bytesRead
 ) {
-
-    if (buffer == nullptr || bytesRead == nullptr) {
+    if (buffer == nullptr ||
+        bytesRead == nullptr ||
+        bufferSize == 0) {
         return false;
     }
+
+    *bytesRead = 0;
 
     esp_err_t result = i2s_read(
         I2S_PORT,
@@ -72,7 +79,14 @@ bool microphoneReadAudio(
         portMAX_DELAY
     );
 
-    return result == ESP_OK && *bytesRead > 0;
+    if (result != ESP_OK ||
+        *bytesRead == 0 ||
+        *bytesRead > bufferSize) {
+        *bytesRead = 0;
+        return false;
+    }
+
+    return true;
 }
 
 float microphoneReadLevel() {
@@ -93,8 +107,7 @@ float microphoneReadLevel() {
 
     for (size_t i = 0; i < samples; i++) {
 
-        int32_t sample = audioBuffer[i] >> 14;
-
+        int32_t sample = audioBuffer[i] >> 16;
         sum += (double)sample * sample;
     }
 

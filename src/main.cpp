@@ -10,6 +10,7 @@
 #define VOICE_THRESHOLD 500.0f
 
 static int16_t pcmBuffer[PCM_BUFFER_SIZE];
+static uint32_t lastAudioLogMs = 0;
 
 bool recording = false;
 
@@ -84,9 +85,6 @@ void loop() {
                 samplesRead
             );
 
-            Serial.print("Audio RMS: ");
-            Serial.println(audioLevel);
-
             // Detect voice using the RMS threshold.
             bool voiceDetected = detectVoice(
                 pcmBuffer,
@@ -94,13 +92,16 @@ void loop() {
                 VOICE_THRESHOLD
             );
 
-            if (voiceDetected) {
+            if (millis() - lastAudioLogMs >= 250) {
 
-                Serial.println("Voice detected!");
+                Serial.print("Audio RMS: ");
+                Serial.println(audioLevel);
 
-            } else {
+                Serial.println(
+                    voiceDetected ? "Voice detected!" : "No voice detected."
+                );
 
-                Serial.println("No voice detected.");
+                lastAudioLogMs = millis();
             }
         }
     }

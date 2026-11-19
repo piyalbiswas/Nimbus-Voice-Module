@@ -8,6 +8,8 @@
 
 bool microphoneBegin();
 
+void microphoneFlush();
+
 float microphoneReadLevel();
 
 bool microphoneReadAudio(
